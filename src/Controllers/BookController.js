@@ -26,8 +26,15 @@ export const GetBookById = async (req, res) => {
 
 export const CreateBook = async (req, res) => {
   try {
-    const { title, content } = req.body;
-    const newBook = new Book({ title, content });
+    const { title, author, category, price, description, imageUrl } = req.body;
+    const newBook = new Book({
+      title,
+      author,
+      category,
+      price,
+      description,
+      imageUrl,
+    });
     await newBook.save();
     res
       .status(201)
