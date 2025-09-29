@@ -1,9 +1,9 @@
+dotenv.config();
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import BookRoutes from './Routes/BookRoutes.js';
-import { connectDB } from './Config/db.js';
-dotenv.config();
+import BookRoutes from './src/Routes/BookRoutes.js';
+import { connectDB } from './src/Config/db.js';
 // Middlewares and configurations
 const app = express();
 app.use(cors());
@@ -24,7 +24,7 @@ connectDB();
 app.get('/', (req, res) => {
   res.send('Welcome to the Book Trading Club server!');
 });
-export default app;
-// app.listen(PORT, () => {
-//   console.log(`Listening on port ${PORT}...`);
-// });
+// export default app;
+app.listen(PORT, () => {
+  console.log(`Listening on port ${PORT}...`);
+});
