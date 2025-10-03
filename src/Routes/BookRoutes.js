@@ -9,9 +9,9 @@ import {
 
 const router = express.Router();
 
-router.get('/get-all-books', GetAllBooks);
+router.get('/', GetAllBooks);
 
-router.get('/bookdetail/:id', GetBookById);
+router.get('/:id', GetBookById);
 
 router.post('/', CreateBook);
 

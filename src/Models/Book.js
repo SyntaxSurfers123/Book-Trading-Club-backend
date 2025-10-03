@@ -14,7 +14,7 @@ const BookSchema = new mongoose.Schema(
     },
     ISBN: {
       type: String,
-      required: true,
+      default: 'N/A',
     },
     Location: {
       type: String,
