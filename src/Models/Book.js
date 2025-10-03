@@ -12,10 +12,34 @@ const BookSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    ISBN: {
+      type: String,
+      required: true,
+    },
+    Location: {
+      type: String,
+      default: 'Dhaka',
+    },
+    Condition: {
+      type: String,
+      default: 'Good',
+    },
+    Exchange: {
+      type: String,
+      default: 'Swap',
+    },
+    Language: {
+      type: String,
+      default: 'English',
+    },
     category: {
       type: String,
       required: true,
       trim: true,
+    },
+    tags: {
+      type: [String],
+      default: [],
     },
     price: {
       type: Number,
