@@ -1,193 +1,82 @@
 import express from 'express';
+import User from '../Models/User.js';
 
 const router = express.Router();
 
-// Get user's favorite books
+// Get All users
+router.get('/', async (req, res) => {
+  try {
+    const users = await User.find();
+    res.status(200).json(users);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: 'Internal Server Error', error: error.message });
+  }
+});
+
+// Get user by uid
 router.get('/:uid', async (req, res) => {
   try {
     const { uid } = req.params;
-    console.log(`📖 Fetching favorites for user: ${uid}`);
-
-    let user = await User.findOne({ uid });
-
-    // If user doesn't exist, create them
-    if (!user) {
-      console.log(`👤 Creating new user: ${uid}`);
-      user = new User({
-        uid,
-        email: req.query.email || 'unknown@example.com',
-        favoriteBooks: [],
-      });
-      await user.save();
-      console.log(`✅ User created successfully`);
+    if (!uid) {
+      return res.status(400).json({ message: 'UID is required' });
     }
-
-    console.log(
-      `📚 Found ${user.favoriteBooks.length} favorites for user ${uid}`
-    );
-    res.json({
-      success: true,
-      favoriteBooks: user.favoriteBooks,
-    });
+    const user = await User.findOne({ uid: uid });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.status(200).json(user);
   } catch (error) {
-    console.error('❌ Error fetching favorites:', error);
-    res.status(500).json({
-      success: false,
-      error: `Failed to fetch favorites: ${error.message}`,
-    });
+    res
+      .status(500)
+      .json({ message: 'Internal Server Error', error: error.message });
   }
 });
 
-// Add book to favorites
-router.post('/:uid', async (req, res) => {
+// Create or update user
+router.post('/', async (req, res) => {
+  const { uid, email, displayName } = req.body;
+  if (!uid || !email || !displayName) {
+    return res
+      .status(400)
+      .json({ message: 'UID, email, and displayName are required' });
+  }
   try {
-    const { uid } = req.params;
-    const { bookId } = req.body;
-
-    if (!bookId) {
-      return res.status(400).json({
-        success: false,
-        error: 'Book ID is required',
+    const existingUser = await User.findOne({ uid: uid });
+    if (existingUser) {
+      res.status(200).json({
+        error: false,
+        message: 'User already exists',
+        user: existingUser,
       });
     }
-
-    let user = await User.findOne({ uid });
-
-    if (!user) {
-      user = new User({
-        uid,
-        email: req.body.email || 'unknown@example.com',
-        favoriteBooks: [bookId],
-      });
-    } else {
-      // Only add if not already in favorites
-      if (!user.favoriteBooks.includes(bookId)) {
-        user.favoriteBooks.push(bookId);
-      }
-    }
-
-    user.updatedAt = new Date();
-    await user.save();
-
-    res.json({
-      success: true,
-      message: 'Book added to favorites',
-      favoriteBooks: user.favoriteBooks,
-    });
+    const newUser = new User({ uid, email, displayName });
+    await newUser.save();
+    res
+      .status(201)
+      .json({ error: false, message: 'User created', user: newUser });
   } catch (error) {
-    console.error('Error adding to favorites:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to add to favorites',
-    });
+    res
+      .status(500)
+      .json({ message: 'Internal Server Error', error: error.message });
   }
 });
 
-// Remove book from favorites
-router.delete('/:uid/:bookId', async (req, res) => {
+// Delete user by uid
+router.delete('/:uid', async (req, res) => {
+  const { uid } = req.params;
+  if (!uid) {
+    return res.status(400).json({ message: 'UID is required' });
+  }
   try {
-    const { uid, bookId } = req.params;
-
-    const user = await User.findOne({ uid });
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        error: 'User not found',
-      });
+    const existingUser = await User.findOne({ uid: uid });
+    if (!existingUser) {
+      return res.status(404).json({ message: 'User not found' });
     }
-
-    user.favoriteBooks = user.favoriteBooks.filter((id) => id !== bookId);
-    user.updatedAt = new Date();
-    await user.save();
-
-    res.json({
-      success: true,
-      message: 'Book removed from favorites',
-      favoriteBooks: user.favoriteBooks,
-    });
-  } catch (error) {
-    console.error('Error removing from favorites:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to remove from favorites',
-    });
-  }
+    await User.deleteOne({ uid: uid });
+    res.status(200).json({ message: 'User deleted successfully' });
+  } catch (error) {}
 });
 
-// Toggle favorite (add if not present, remove if present)
-router.put('/:uid/toggle', async (req, res) => {
-  try {
-    const { uid } = req.params;
-    const { bookId } = req.body;
-
-    console.log(`🔄 Toggling favorite for user ${uid}, book ${bookId}`);
-
-    if (!bookId) {
-      console.log('❌ Book ID is required');
-      return res.status(400).json({
-        success: false,
-        error: 'Book ID is required',
-      });
-    }
-
-    let user = await User.findOne({ uid });
-
-    if (!user) {
-      console.log(`👤 Creating new user: ${uid}`);
-      user = new User({
-        uid,
-        email: req.body.email || 'unknown@example.com',
-        favoriteBooks: [bookId],
-      });
-      await user.save();
-      console.log(`✅ User created and book ${bookId} added to favorites`);
-
-      return res.json({
-        success: true,
-        action: 'added',
-        message: 'Book added to favorites',
-        favoriteBooks: user.favoriteBooks,
-      });
-    }
-
-    const isFavorite = user.favoriteBooks.includes(bookId);
-    console.log(
-      `📚 Book ${bookId} is currently ${
-        isFavorite ? 'favorited' : 'not favorited'
-      }`
-    );
-
-    if (isFavorite) {
-      user.favoriteBooks = user.favoriteBooks.filter((id) => id !== bookId);
-      user.updatedAt = new Date();
-      await user.save();
-      console.log(`✅ Book ${bookId} removed from favorites`);
-
-      res.json({
-        success: true,
-        action: 'removed',
-        message: 'Book removed from favorites',
-        favoriteBooks: user.favoriteBooks,
-      });
-    } else {
-      user.favoriteBooks.push(bookId);
-      user.updatedAt = new Date();
-      await user.save();
-      console.log(`✅ Book ${bookId} added to favorites`);
-
-      res.json({
-        success: true,
-        action: 'added',
-        message: 'Book added to favorites',
-        favoriteBooks: user.favoriteBooks,
-      });
-    }
-  } catch (error) {
-    console.error('❌ Error toggling favorite:', error);
-    res.status(500).json({
-      success: false,
-      error: `Failed to toggle favorite: ${error.message}`,
-    });
-  }
-});
+export default router;

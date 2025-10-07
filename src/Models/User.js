@@ -13,6 +13,10 @@ const UserSchema = new mongoose.Schema({
     trim: true,
     lowercase: true,
   },
+  role: {
+    type: String,
+    default: 'user',
+  },
   displayName: {
     type: String,
     required: true,
