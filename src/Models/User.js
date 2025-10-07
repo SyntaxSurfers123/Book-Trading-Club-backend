@@ -1,14 +1,42 @@
 import mongoose from 'mongoose';
 
-const userSchema = new mongoose.Schema(
-  {
-    uid: { type: String, required: true, unique: true },
-    email: { type: String, required: true },
-    displayName: { type: String },
-    favoriteBooks: [{ type: String }], // Array of book IDs
+const UserSchema = new mongoose.Schema({
+  uid: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true,
   },
-  { timestamps: true }
-);
+  email: {
+    type: String,
+    required: true,
+    trim: true,
+    lowercase: true,
+  },
+  displayName: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  favoriteBooks: {
+    type: [String],
+    default: [],
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
 
-const User = mongoose.model('User', userSchema);
+// Update the updatedAt field before saving
+UserSchema.pre('save', function (next) {
+  this.updatedAt = new Date();
+  next();
+});
+
+const User = mongoose.model('User', UserSchema);
 export default User;

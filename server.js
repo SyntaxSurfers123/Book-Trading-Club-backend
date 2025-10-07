@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import BookRoutes from './src/Routes/BookRoutes.js';
+import FavoritesRoutes from './src/Routes/FavoritesRoutes.js';
 import { connectDB } from './src/Config/db.js';
 // Middlewares and configurations
 const app = express();
@@ -11,10 +12,12 @@ app.use(express.json());
 const PORT = process.env.PORT || 3001;
 
 // Quick health check
-app.get('/health', (_req, res) => res.send('ok'));
+app.get('/health', (_req, res) => res.json({ success: true }));
+app.get('/api/health', (_req, res) => res.json({ success: true }));
 
 /////////////////////// Routes Start //////////////////////////////////
 app.use('/api/books', BookRoutes);
+app.use('/api/favorites', FavoritesRoutes);
 /////////////////////// Routes End //////////////////////////////////
 
 /////////////////////// ConnectDB Start //////////////////////////////////
