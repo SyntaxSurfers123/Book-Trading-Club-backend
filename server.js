@@ -18,7 +18,7 @@ app.get('/api/health', (_req, res) => res.json({ success: true }));
 
 /////////////////////// Routes Start //////////////////////////////////
 app.use('/api/books', BookRoutes);
-app.use('/users', UserRoutes);
+app.use('/api/users', UserRoutes);
 app.use('/api/favorites', FavoritesRoutes);
 /////////////////////// Routes End //////////////////////////////////
 
