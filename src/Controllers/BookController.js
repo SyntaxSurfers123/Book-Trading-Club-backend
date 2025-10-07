@@ -2,7 +2,7 @@ import Book from '../Models/Book.js';
 
 export const GetAllBooks = async (req, res) => {
   try {
-    const books = await Book.find().sort({ createdAt: -1 });
+    const books = await Book.find();
     res.status(200).json(books);
   } catch (error) {
     console.error('Error in GetAllBooks:', error);
