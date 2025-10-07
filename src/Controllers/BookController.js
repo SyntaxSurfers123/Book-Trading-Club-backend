@@ -2,7 +2,7 @@ import Book from '../Models/Book.js';
 
 export const GetAllBooks = async (req, res) => {
   try {
-    const books = await Book.find();
+    const books = await Book.find().sort({ createdAt: -1 });
     res.status(200).json(books);
   } catch (error) {
     console.error('Error in GetAllBooks:', error);
@@ -26,7 +26,19 @@ export const GetBookById = async (req, res) => {
 
 export const CreateBook = async (req, res) => {
   try {
-    const { title, author, category, price, description, imageUrl } = req.body;
+    const { title, author, category, price, description, imageUrl, uid } =
+      req.body;
+    if (
+      !uid ||
+      !title ||
+      !author ||
+      !category ||
+      !price ||
+      !description ||
+      !imageUrl
+    ) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
     const newBook = new Book({
       title,
       author,
@@ -34,6 +46,7 @@ export const CreateBook = async (req, res) => {
       price,
       description,
       imageUrl,
+      uid,
     });
     await newBook.save();
     res
