@@ -55,6 +55,10 @@ const BookSchema = new mongoose.Schema(
       type: String,
       required: true, // since Cloudinary upload always provides a URL
     },
+    uid: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );
