@@ -5,7 +5,9 @@ import dotenv from 'dotenv';
 import BookRoutes from './src/Routes/BookRoutes.js';
 import FavoritesRoutes from './src/Routes/FavoritesRoutes.js';
 import UserRoutes from './src/Routes/UserRoutes.js';
+import ReviewsRoutes from './src/Routes/ReviewRoutes.js';
 import { connectDB } from './src/Config/db.js';
+
 // Middlewares and configurations
 const app = express();
 app.use(cors());
@@ -20,6 +22,7 @@ app.get('/api/health', (_req, res) => res.json({ success: true }));
 app.use('/api/books', BookRoutes);
 app.use('/api/users', UserRoutes);
 app.use('/api/favorites', FavoritesRoutes);
+app.use('/api/reviews', ReviewsRoutes);
 /////////////////////// Routes End //////////////////////////////////
 
 app.get('/', (req, res) => {

@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
 const ReviewSchema = new Schema(
   {
@@ -11,11 +11,6 @@ const ReviewSchema = new Schema(
     book: {
       type: Schema.Types.ObjectId,
       ref: 'Book',
-      required: true,
-      index: true,
-    },
-    uid: {
-      type: String,
       required: true,
       index: true,
     },
