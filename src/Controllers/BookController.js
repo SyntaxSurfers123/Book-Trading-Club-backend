@@ -26,9 +26,11 @@ export const GetBookById = async (req, res) => {
 
 export const GetUserBooks = async (req, res) => {
   try {
-    const uid = req.body;
-    console.log(`UID is ${uid}..`);
-    const books = Book.find({ uid });
+    const { uid } = req.params;
+    if (!uid) {
+      return res.status(400).json({ message: 'UID is required' });
+    }
+    const books = await Book.find({ uid: uid });
     res.status(200).json(books);
   } catch (error) {
     console.error('Error in GetUserBooks:', error);
