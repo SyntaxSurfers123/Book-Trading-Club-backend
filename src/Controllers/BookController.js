@@ -24,6 +24,18 @@ export const GetBookById = async (req, res) => {
   }
 };
 
+export const GetUserBooks = async (req, res) => {
+  try {
+    const uid = req.body;
+    console.log(`UID is ${uid}..`);
+    const books = Book.find({ uid });
+    res.status(200).json(books);
+  } catch (error) {
+    console.error('Error in GetUserBooks:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
 export const CreateBook = async (req, res) => {
   try {
     const {
