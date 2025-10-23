@@ -4,6 +4,7 @@ import {
   DeleteBook,
   GetAllBooks,
   GetBookById,
+  GetBooksByLocation,
   GetUserBooks,
   UpdateBook,
 } from '../Controllers/BookController.js';
@@ -11,6 +12,8 @@ import {
 const router = express.Router();
 
 router.get('/', GetAllBooks);
+
+router.get('/location', GetBooksByLocation);
 
 router.get('/:id', GetBookById);
 
