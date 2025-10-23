@@ -5,6 +5,7 @@ import {
   GetAllBooks,
   GetBookById,
   GetBooksByLocation,
+  GetUserBooks,
   UpdateBook,
 } from '../Controllers/BookController.js';
 
@@ -15,6 +16,8 @@ router.get('/', GetAllBooks);
 router.get('/location', GetBooksByLocation);
 
 router.get('/:id', GetBookById);
+
+router.get('/get-user-books/:uid', GetUserBooks);
 
 router.post('/', CreateBook);
 
