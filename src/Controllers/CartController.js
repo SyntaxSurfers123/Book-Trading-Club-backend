@@ -9,14 +9,14 @@ const isObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 export const GetCart = async (req, res) => {
   try {
     const { userId } = req.params;
-    if (!isObjectId(id)) {
+    if (!isObjectId(userId)) {
       return HttpResponse(res, 400, true, 'Invalid user ID');
     }
 
-    const ExistingUser = await User.exists({ _id: id });
+    const ExistingUser = await User.exists({ _id: userId });
     if (!ExistingUser) return HttpResponse(res, 404, true, 'User not Found');
 
-    const cartitems = await Cart.find({ user: id })
+    const cartitems = await Cart.find({ user: userId })
       .sort('-createdAt')
       .populate([
         { path: 'user', select: 'displayName email' },
@@ -31,6 +31,7 @@ export const GetCart = async (req, res) => {
       cartitems
     );
   } catch (error) {
+    console.error(error);
     return HttpResponse(res, 500, true, 'Internal Server Error');
   }
 };
@@ -114,5 +115,3 @@ export const DeleteCartItem = async (req, res) => {
     return HttpResponse(res, 500, true, 'Internal Server Error');
   }
 };
-
-

@@ -12,7 +12,7 @@ const router = express.Router();
 router.get('/:userId', GetCart);
 
 // POST: add an item to cart
-router.post('/', AddProductToCart);
+router.post('/add-to-cart', AddProductToCart);
 
 // DELETE: remove a specific cart item
 router.delete('/:id', DeleteCartItem);
