@@ -22,6 +22,10 @@ const UserSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
+  image: {
+    type: String,
+    default: 'https://i.ibb.co.com/0yrpXd6k/Blank-Pfp.webp',
+  },
   favoriteBooks: {
     type: [String],
     default: [],
