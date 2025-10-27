@@ -6,6 +6,7 @@ import BookRoutes from './src/Routes/BookRoutes.js';
 import FavoritesRoutes from './src/Routes/FavoritesRoutes.js';
 import UserRoutes from './src/Routes/UserRoutes.js';
 import ReviewsRoutes from './src/Routes/ReviewRoutes.js';
+import CartRoutes from './src/Routes/CartRoutes.js';
 import { connectDB } from './src/Config/db.js';
 
 // Middlewares and configurations
@@ -23,6 +24,7 @@ app.use('/api/books', BookRoutes);
 app.use('/api/users', UserRoutes);
 app.use('/api/favorites', FavoritesRoutes);
 app.use('/api/reviews', ReviewsRoutes);
+app.use('/api/cart', CartRoutes);
 /////////////////////// Routes End //////////////////////////////////
 
 app.get('/', (req, res) => {

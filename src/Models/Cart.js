@@ -6,19 +6,15 @@ const CartSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
-      index: true,
     },
     book: {
       type: Schema.Types.ObjectId,
-      ref: 'User',
+      ref: 'Book',
       required: true,
     },
   },
   {
     timestamps: true,
-    versionKey: false,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
   }
 );
 
