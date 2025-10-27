@@ -97,12 +97,39 @@ export const CreateBook = async (req, res) => {
   }
 };
 
-export const UpdateBook = (req, res) => {
-  const { id } = req.params;
-  const body = req.body;
-  res
-    .status(201)
-    .json({ message: `Book Put request working for id: ${id}`, body: body });
+export const UpdateBook = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updates = req.body;
+
+    // Validate id and data
+    if (!id) {
+      return res.status(400).json({ message: 'Book ID is required' });
+    }
+
+    if (!updates || Object.keys(updates).length === 0) {
+      return res.status(400).json({ message: 'No data provided for update' });
+    }
+
+    // Find and update the book
+    const updatedBook = await Book.findByIdAndUpdate(id, updates, {
+      new: true, // returns the updated document
+      runValidators: true, // ensures Mongoose validation rules still apply
+    });
+
+    // If not found
+    if (!updatedBook) {
+      return res.status(404).json({ message: 'Book not found' });
+    }
+
+    res.status(200).json({
+      message: 'Book updated successfully',
+      book: updatedBook,
+    });
+  } catch (error) {
+    console.error('Error in UpdateBook:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
 };
 
 export const DeleteBook = async (req, res) => {
