@@ -20,7 +20,7 @@ export const GetCart = async (req, res) => {
       .sort('-createdAt')
       .populate([
         { path: 'user', select: 'displayName email' },
-        { path: 'book', select: 'title author' },
+        { path: 'book', select: 'title author price imageUrl ISBN Exchange ' },
       ]);
 
     return HttpResponse(
