@@ -99,7 +99,7 @@ router.delete('/:uid', async (req, res) => {
 // update user by uid
 router.put('/:uid', async (req, res) => {
   const { uid } = req.params;
-  const { email, displayName, favoriteBooks, role } = req.body;
+  const { email, displayName, favoriteBooks, role, image } = req.body;
   if (!uid) {
     return res.status(400).json({ message: 'UID is required' });
   }
@@ -112,6 +112,7 @@ router.put('/:uid', async (req, res) => {
     if (email) existingUser.email = email;
     if (displayName) existingUser.displayName = displayName;
     if (favoriteBooks) existingUser.favoriteBooks = favoriteBooks;
+    if (image) existingUser.image = image;
     await existingUser.save();
     res
       .status(200)
