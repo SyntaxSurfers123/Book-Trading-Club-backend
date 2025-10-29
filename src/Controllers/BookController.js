@@ -1,4 +1,5 @@
 import Book from '../Models/Book.js';
+import { HttpResponse } from '../utils/HttpResponse.js';
 
 export const GetAllBooks = async (req, res) => {
   try {
@@ -35,6 +36,24 @@ export const GetUserBooks = async (req, res) => {
   } catch (error) {
     console.error('Error in GetUserBooks:', error);
     res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+export const GetBooksbyLocation = async (req, res) => {
+  const { location } = req.params;
+  if (!location) return HttpResponse(res, 400, true, 'Location is required');
+  try {
+    const books = await Book.find({ Location: location, Exchange: 'Swap' });
+    return HttpResponse(
+      res,
+      200,
+      false,
+      'Book Fetched by location successfully',
+      books
+    );
+  } catch (error) {
+    console.error(error);
+    return HttpResponse(res, 500, true, 'Internal Server Error');
   }
 };
 

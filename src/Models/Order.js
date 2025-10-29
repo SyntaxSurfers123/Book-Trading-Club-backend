@@ -10,7 +10,7 @@ const OrderSchema = new Schema(
     },
     book: {
       type: Schema.Types.ObjectId,
-      ref: 'User',
+      ref: 'Book',
       required: true,
     },
   },

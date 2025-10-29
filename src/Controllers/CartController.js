@@ -1,5 +1,6 @@
 import Book from '../Models/Book.js';
 import Cart from '../Models/Cart.js';
+import Order from '../Models/Order.js';
 import User from '../Models/User.js';
 import { HttpResponse } from '../utils/HttpResponse.js';
 import mongoose from 'mongoose';
@@ -70,6 +71,12 @@ export const AddProductToCart = async (req, res) => {
     const existingCartItem = await Cart.findOne({ user, book });
     if (existingCartItem) {
       return HttpResponse(res, 409, true, 'Book already in cart');
+    }
+
+    // Prevent Duplicate Order Item
+    const existingOrderItem = await Order.findOne({ user, book });
+    if (existingOrderItem) {
+      return HttpResponse(res, 409, true, 'You already own this book');
     }
 
     // Create cart item
