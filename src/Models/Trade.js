@@ -24,6 +24,10 @@ const TradeSchema = new Schema(
       ref: 'Book',
       required: true,
     },
+    status: {
+      type: String,
+      default: 'Requested',
+    },
   },
   {
     timestamps: true,
