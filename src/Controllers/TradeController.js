@@ -202,3 +202,35 @@ export const GetAcceptedTrades = async (req, res) => {
     return HttpResponse(res, 500, true, 'Internal Server Error');
   }
 };
+
+// 🟨 3. Get Trade Request — trades where user is receiver , and status is "Requested"
+export const GetTradeRequest = async (req, res) => {
+  const { userId } = req.params;
+
+  if (!userId) return HttpResponse(res, 400, true, 'User ID is required');
+  if (!isObjectId(userId))
+    return HttpResponse(res, 400, true, 'Invalid User ID');
+
+  try {
+    const tradeRequests = await Trade.find({
+      receiver: userId,
+      status: 'Requested',
+    })
+      .populate('sender', 'displayName email image')
+      .populate('receiver', 'displayName email image')
+      .populate('senderbook', 'title author price imageUrl')
+      .populate('receiverbook', 'title author price imageUrl')
+      .sort({ createdAt: -1 });
+
+    return HttpResponse(
+      res,
+      200,
+      false,
+      'Trade requests received successfully',
+      tradeRequests
+    );
+  } catch (error) {
+    console.error(error);
+    return HttpResponse(res, 500, true, 'Internal Server Error');
+  }
+};
