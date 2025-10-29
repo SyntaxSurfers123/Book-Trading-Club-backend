@@ -58,31 +58,31 @@ export const CreateTrade = async (req, res) => {
       return HttpResponse(res, 404, true, 'Receiver book not found');
 
     // 4. Verify ownership
-    const senderOwnsBook = await Order.exists({
-      user: sender,
-      book: senderbook,
-    });
-    if (!senderOwnsBook) {
-      return HttpResponse(
-        res,
-        400,
-        true,
-        'Sender does not own the selected book'
-      );
-    }
+    // const senderOwnsBook = await Order.exists({
+    //   user: sender,
+    //   book: senderbook,
+    // });
+    // if (!senderOwnsBook) {
+    //   return HttpResponse(
+    //     res,
+    //     400,
+    //     true,
+    //     'Sender does not own the selected book'
+    //   );
+    // }
 
-    const receiverOwnsBook = await Order.exists({
-      user: receiver,
-      book: receiverbook,
-    });
-    if (!receiverOwnsBook) {
-      return HttpResponse(
-        res,
-        400,
-        true,
-        'Receiver does not own the selected book'
-      );
-    }
+    // const receiverOwnsBook = await Order.exists({
+    //   user: receiver,
+    //   book: receiverbook,
+    // });
+    // if (!receiverOwnsBook) {
+    //   return HttpResponse(
+    //     res,
+    //     400,
+    //     true,
+    //     'Receiver does not own the selected book'
+    //   );
+    // }
 
     // 5. Prevent duplicate ownership
     const existingOrderSender = await Order.exists({

@@ -9,6 +9,7 @@ import ReviewsRoutes from './src/Routes/ReviewRoutes.js';
 import CartRoutes from './src/Routes/CartRoutes.js';
 import OrdersRoutes from './src/Routes/OrderRoutes.js';
 import StripeRoutes from './src/Routes/StripeRoutes.js';
+import TradeRoutes from './src/Routes/TradeRoutes.js';
 import { connectDB } from './src/Config/db.js';
 
 // Middlewares and configurations
@@ -29,6 +30,7 @@ app.use('/api/reviews', ReviewsRoutes);
 app.use('/api/cart', CartRoutes);
 app.use('/api/orders', OrdersRoutes);
 app.use('/', StripeRoutes);
+app.use('/api/trades', TradeRoutes);
 /////////////////////// Routes End //////////////////////////////////
 
 app.get('/', (req, res) => {
