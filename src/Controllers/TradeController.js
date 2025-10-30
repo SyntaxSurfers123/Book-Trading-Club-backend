@@ -57,34 +57,7 @@ export const CreateTrade = async (req, res) => {
     if (!receiverBookDoc)
       return HttpResponse(res, 404, true, 'Receiver book not found');
 
-    // 4. Verify ownership
-    // const senderOwnsBook = await Order.exists({
-    //   user: sender,
-    //   book: senderbook,
-    // });
-    // if (!senderOwnsBook) {
-    //   return HttpResponse(
-    //     res,
-    //     400,
-    //     true,
-    //     'Sender does not own the selected book'
-    //   );
-    // }
-
-    // const receiverOwnsBook = await Order.exists({
-    //   user: receiver,
-    //   book: receiverbook,
-    // });
-    // if (!receiverOwnsBook) {
-    //   return HttpResponse(
-    //     res,
-    //     400,
-    //     true,
-    //     'Receiver does not own the selected book'
-    //   );
-    // }
-
-    // 5. Prevent duplicate ownership
+    // 4. Prevent duplicate ownership
     const existingOrderSender = await Order.exists({
       user: sender,
       book: receiverbook,
@@ -111,7 +84,7 @@ export const CreateTrade = async (req, res) => {
       );
     }
 
-    // 6. Prevent duplicate trade requests
+    // 5. Prevent duplicate trade requests
     const existingTrade = await Trade.exists({
       sender,
       receiver,
@@ -123,7 +96,7 @@ export const CreateTrade = async (req, res) => {
       return HttpResponse(res, 400, true, 'Trade request already exists');
     }
 
-    // 7. Create the trade
+    // 6. Create the trade
     const trade = await Trade.create({
       sender,
       receiver,
@@ -229,6 +202,95 @@ export const GetTradeRequest = async (req, res) => {
       'Trade requests received successfully',
       tradeRequests
     );
+  } catch (error) {
+    console.error(error);
+    return HttpResponse(res, 500, true, 'Internal Server Error');
+  }
+};
+
+// 🟥 4. Get Rejected Trades — trades where user is sender or receiver, and status is "Rejected"
+export const GetRejectedTrades = async (req, res) => {
+  const { userId } = req.params;
+
+  if (!userId) return HttpResponse(res, 400, true, 'User ID is required');
+  if (!isObjectId(userId))
+    return HttpResponse(res, 400, true, 'Invalid User ID');
+
+  try {
+    // ✅ $or ensures we get trades where user is either sender OR receiver
+    const rejectedTrades = await Trade.find({
+      status: 'Rejected',
+      $or: [{ sender: userId }, { receiver: userId }],
+    })
+      .populate('sender', 'displayName email image')
+      .populate('receiver', 'displayName email image')
+      .populate('senderbook', 'title author price imageUrl')
+      .populate('receiverbook', 'title author price imageUrl')
+      .sort({ updatedAt: -1 });
+
+    return HttpResponse(
+      res,
+      200,
+      false,
+      'Rejected trades fetched successfully',
+      rejectedTrades
+    );
+  } catch (error) {
+    console.error(error);
+    return HttpResponse(res, 500, true, 'Internal Server Error');
+  }
+};
+
+// 🟥 5. Reject a Trade, changing the trade status from "Requested" to "Rejected"
+export const RejectTrade = async (req, res) => {
+  const { id } = req.params;
+  if (!id) return HttpResponse(res, 400, true, 'Trade ID is required');
+  if (!isObjectId(id)) return HttpResponse(res, 400, true, 'Invalid Trade ID');
+  try {
+    const ExistingTrade = await Trade.findOne({ _id: id });
+    if (!ExistingTrade) return HttpResponse(res, 404, true, 'Trade Not Found');
+    ExistingTrade.status = 'Rejected';
+    await ExistingTrade.save();
+    return HttpResponse(
+      res,
+      202,
+      false,
+      'Trade Rejected Successfully',
+      ExistingTrade
+    );
+  } catch (error) {
+    console.error(error);
+    return HttpResponse(res, 500, true, 'Internal Server Error');
+  }
+};
+// 🟩 6. Accept a Trade, changing the trade status from "Requested" to "Accepted". Create 2 orders and send them to the DB
+export const AcceptTrade = async (req, res) => {
+  const { id } = req.params;
+  if (!id) return HttpResponse(res, 400, true, 'Trade ID is required');
+  if (!isObjectId(id)) return HttpResponse(res, 400, true, 'Invalid Trade ID');
+  try {
+    const ExistingTrade = await Trade.findOne({ _id: id });
+    if (!ExistingTrade) return HttpResponse(res, 404, true, 'Trade Not Found');
+    // 1. Create an Order where the user is the receiver and the book is the senderbook
+    const order1 = new Order({
+      user: ExistingTrade.receiver,
+      book: ExistingTrade.senderbook,
+    });
+    const order2 = new Order({
+      user: ExistingTrade.sender,
+      book: ExistingTrade.receiverbook,
+    });
+
+    ExistingTrade.status = 'Accepted';
+
+    await order1.save();
+    await order2.save();
+    await ExistingTrade.save();
+    return HttpResponse(res, 202, false, 'Trade Accepted Successfully', [
+      ExistingTrade,
+      order1,
+      order2,
+    ]);
   } catch (error) {
     console.error(error);
     return HttpResponse(res, 500, true, 'Internal Server Error');
