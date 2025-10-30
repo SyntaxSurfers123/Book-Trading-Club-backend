@@ -4,6 +4,7 @@ import {
   DeleteBook,
   GetAllBooks,
   GetBookById,
+  GetBooksbyLocation,
   GetBooksByLocation,
   GetUserBooks,
   UpdateBook,
