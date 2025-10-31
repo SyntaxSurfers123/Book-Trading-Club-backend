@@ -12,7 +12,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET, {
 const router = express.Router();
 
 // Enable CORS so frontend can call this API
-router.use(cors({ origin: 'http://localhost:5173' }));
+router.use(cors({ origin: 'https://book-trading-club-delta.vercel.app' }));
 
 router.post('/create-checkout-session', async (req, res) => {
   try {
@@ -51,8 +51,9 @@ router.post('/create-checkout-session', async (req, res) => {
       line_items: lineItems,
       mode: 'payment',
       success_url:
-        'http://localhost:5173/dashboard/payment-success?session_id={CHECKOUT_SESSION_ID}',
-      cancel_url: 'http://localhost:5173/dashboard/payment-failure',
+        'https://book-trading-club-delta.vercel.app/dashboard/payment-success?session_id={CHECKOUT_SESSION_ID}',
+      cancel_url:
+        'https://book-trading-club-delta.vercel.app/dashboard/payment-failure',
     });
 
     // Return the URL so frontend can redirect directly
