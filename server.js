@@ -10,6 +10,7 @@ import CartRoutes from './src/Routes/CartRoutes.js';
 import OrdersRoutes from './src/Routes/OrderRoutes.js';
 import StripeRoutes from './src/Routes/StripeRoutes.js';
 import TradeRoutes from './src/Routes/TradeRoutes.js';
+import MessageRoutes from './src/Routes/MessageRoutes.js';
 import { connectDB } from './src/Config/db.js';
 
 // Middlewares and configurations
@@ -31,6 +32,7 @@ app.use('/api/cart', CartRoutes);
 app.use('/api/orders', OrdersRoutes);
 app.use('/', StripeRoutes);
 app.use('/api/trades', TradeRoutes);
+app.use('/api/messages', MessageRoutes);
 /////////////////////// Routes End //////////////////////////////////
 
 app.get('/', (req, res) => {
